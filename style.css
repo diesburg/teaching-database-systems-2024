@@ -62,6 +62,27 @@ h5 {
 	font-size: 18px;
 	margin: 30px 0 5px 0;
 }
+
+ul,
+ol {
+  /* user-agent styles */
+  display: block;
+  margin-block-start: 1em;
+  margin-block-end: 1em;
+  padding-inline-start: 40px;
+	font-size: 14px;
+	line-height: 22px;
+
+}
+
+ul {
+	list-style-type:disc;
+}
+
+ol {
+	list-style-type: decimal;
+	}
+
 p {
 	font-size: 14px;
 	line-height: 22px;
