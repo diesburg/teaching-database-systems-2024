@@ -9,10 +9,7 @@
 -- This script is meant to be run one statement at a time.
 -- To do that, highlight a statement and click the lightning bolt
 -- button WITH the cursor.  Clicking the other lightning bolt button
--- will cause the whole script to run top-to-bottom. If you do this 
--- by accident, you may recive some errors and have to manually 
--- delete the test database by right-clicking on the database and
--- selecting 'DROP Schema...'.
+-- will cause the whole script to run top-to-bottom.
 
 -- Don't delete this for now
 SET SQL_SAFE_UPDATES = 0;
@@ -67,44 +64,58 @@ SELECT * from Customer;
 
 -- Questions Section -- 
 
--- [1] How can I update Diesburg's balance to 5000.00?
+-- How can I update Diesburg's balance to 5000.00?
 
+UPDATE Customer
+SET Balance = 5000.00
+WHERE ID = 900;
 
--- [2] Can you write a SELECT query to display 2 things:
--- A. The name of each customer
--- B. How much each customer owes after subtracting the next payment
+-- Can you write a SELECT query to display 2 things:
+-- 1. The name of each customer
+-- 2. How much each customer owes after subtracting the next payment
 -- Finally, will the customer Diesburg show up in this table?  Why/why not?
 
+SELECT Name, Balance-Payment
+FROM Customer
+WHERE Payment IS NOT NULL;
 
-
--- [3] Shoot.  We need to add a person with a name larger than 30 characters in the future.
+-- Shoot.  We need to add a person with a name larger than 30 characters in the future.
 -- Can you alter the table to expand the Name column to 80 characters?
 
+ALTER TABLE Customer 
+CHANGE Name Name VARCHAR(80);
 
-
--- [4] Maybe people have first names, too.  Add a new
+-- Maybe people have first names, too.  Add a new
 -- Firstname column with a VARCHAR(80) datatype?
 
+ALTER TABLE Customer
+ADD Firstname VARCHAR(80);
 
--- [5] It turns out Bolt paid their balance off.  Write a statement to remove their
+-- It turns out Bolt paid their balance off.  Write a statement to remove their
 -- row from the table.
 
+DELETE FROM Customer
+WHERE Name = 'Bolt';
 
-
--- [6] The company is feeling generous!  Write a statement to remove all rows from the
+-- The company is feeling generous!  Write a statement to remove all rows from the
 -- table that have a balance under 1000 or their payment is 0.
 
+DELETE FROM Customer
+WHERE balance < 1000 OR Payment = 0;
 
-
--- [7] We don't have many customers remaining.  Can you write a statement that removes
+-- We don't have many customers remaining.  Can you write a statement that removes
 -- all the rows?
 
+DELETE from Customer;
+-- or
+TRUNCATE TABLE Customer;
 
+-- Okay, how do we just delete the table?
+DROP Table Customer;
 
--- [8] Okay, how do we just delete the table?
+-- How do we delete the test database?
+DROP DATABASE Test;
 
-
--- [9] How do we delete the test database?
-
-
+-- This is equivalent to:
+-- DROP SCHEMA Test;
 
