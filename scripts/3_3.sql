@@ -1,5 +1,5 @@
 -- Let's play with the Auto table in 3.3.2 to see
--- how aggregate functions work.alter
+-- how aggregate functions work
 
 create database cars;
 use cars;
@@ -32,10 +32,22 @@ select COUNT(*) from Auto;
 
 
 -- What is the price of cheapest car?
-select MIN(Price), ID from Auto;
+select MIN(Price) from Auto;
 
 -- What is the difference between the cheapest car and most expensive car?
 select MAX(Price) - MIN(Price) from Auto;
+
+-- Can we get more info than that on the cheapest car?
+select MIN(Price), ID from Auto; -- will fail
+
+-- This failed because MIN(Price) just returns one price, but
+-- asking for ID asks for ID from every row.  No way to answer.
+
+-- What if we use a local variable??? (Note the () )
+SET @min_price = (select MIN(Price) from Auto);
+
+-- Now we can get info about the car based on @min_price
+select * from Auto where Price = @min_price;
 
 -- How do we get a result table of makes along with their counts?
 -- Can we do this without a group by statement?
@@ -67,3 +79,5 @@ from Auto
 where Year < 2016
 group by Year
 having count(Year) > 1;
+
+
