@@ -21,17 +21,9 @@ values
 ('Toyota',	'4Runner',	'suv',	2015,	16900),
 ('Honda',	'CR-V',	'crossover',	2016,	17900);
 
-insert into AutoColor
-values
-(1, 'red'),
-(2, 'silver'),
-(3, 'white'),
-(4, 'black'),
-(5, 'white'),
-(6, 'red'),
-(7, 'red');
 
 -- The following examples work to select cars under or equal to the average price.
+-- Hint: Just use the Auto table.
 
 -- This won't work because we can't use an aggregate function in the WHERE clause!
 select *
