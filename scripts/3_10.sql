@@ -21,25 +21,6 @@ values
 ('Toyota',	'4Runner',	'suv',	2015,	16900),
 ('Honda',	'CR-V',	'crossover',	2016,	17900);
 
-
--- The following examples work to select cars under or equal to the average price.
--- Hint: Just use the Auto table.
-
--- This won't work because we can't use an aggregate function in the WHERE clause!
-select *
-from Auto
-where Price <= AVG(Price); 
-
--- We can solve this with a subquery.
-select *
-from Auto
-where Price <=
-	(select AVG(Price)
-	from Auto)
-;
-
--- (Special note: we could have saved the subquery into a variable.)
-
 -- Now let's have some fun with a second table.  AutoColor has two
 -- columns: an autoID and a color!  The two tables do relate.
 
@@ -60,42 +41,93 @@ values
 (6, 'red'),
 (7, 'white');
 
--- Can we create a subquery using TWO DIFFERENT tables that lists
--- all the cars from the Auto table that are white?
+-- The following examples work to select cars under or equal to the average price.
+-- Hint: Just use the Auto table.
+
+-- This won't work because we can't use an aggregate function in the WHERE clause!
 select *
 from Auto
-where ID in
-	(select AutoID from Autocolor where color='white')
+where Price <= AVG(Price); 
+
+-- We can solve this with a subquery.
+select *
+from Auto
+where Price <=
+	(select AVG(Price)
+	from Auto)
 ;
+
+-- (Special note: we could have saved the subquery into a variable.)
+-- set @avg_price = (select AVG(Price) from Auto);
+-- 
+-- select *
+-- from Auto
+-- where Price <= @avg_price;
+
+-- Can we create a subquery using TWO DIFFERENT tables that lists
+-- all the cars from the Auto table that are white?
 
 -- (Special note: we cannot save the subquery into a variable, 
 -- because it contains more than 1 row.)
+select *
+from Auto
+where ID in
+	(select AutoID
+	from AutoColor
+	where Color = 'white')
+ORDER BY Make;
+
+
 
 -- Something harder...can we create a correlated subquery to 
 -- display cars that are under or equal to the average price for 
 -- the Make of that car?  
 -- For example, only display a Toyota car if it is under the 
--- average price of all toyotas in the table.
+-- average price of all Toyotas in the table.
 -- Hint: only use the Auto table in this example!
 
 select *
 from Auto as A
-WHERE Price <=
-
+where Price <=
 	(select AVG(Price)
     from Auto
-    where Make = A.Make)
+    where A.Make = Make)
 ;
 
--- Using joins instead of subqueries
--- Sometimes, we can FLATTEN a query with a JOIN.  It only works
--- in certain circumstances.
+-- Can we write a query to print the make of a car if 2 or more cars
+-- of that make are white?
 
--- (With a JOIN): Select all columns from the Auto table
--- for cars with an auto color of white.
-select ID, Make, Model, Type, Year, Price, Color
-FROM Auto
+select distinct Make
+from Auto A
+where exists
+	(select *
+	from AutoColor
+    where A.ID = AutoID and Color = 'white')
+;
+
+-- Alternative with a join (a.k.a. "flattening the query")
+select distinct Make
+from Auto
 INNER JOIN AutoColor
-ON AutoID = ID 
-where Color = 'White';
+on Auto.ID = AutoColor.AutoID
+where AutoColor.Color = 'white';
 
+-- What about makes without cars that are white?  It is harder
+-- than flipping "exists" to "not exists"...
+
+-- Instead, we create a query around the subqurey that gave us
+-- the makes that have white cars.  We only print the make if
+-- it is not within one of those.
+select distinct Make
+from Auto
+where Make not in
+	(select distinct Make
+	from Auto A
+	where exists
+		(select *
+		from AutoColor
+		where A.ID = AutoID and Color = 'white'))
+	;
+
+-- We cannot do a simple join to make all the subqueries in the previous 
+-- example go away.
